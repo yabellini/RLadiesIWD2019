@@ -35,7 +35,7 @@ library(stringr)
 #     place=place+30
 #     
 #     
-#     template <- image_annotate(template, , font = 'helvetica', size = 20, location = paste ("+90+", as.character(place)), color = "pink")
+#     template <- image_annotate(template, , font = 'helvetica', size = 20, location = paste ("+90+", as.character(place)), color = "purple")
 #     
 #   }
 #   
@@ -81,28 +81,39 @@ CCRL <- CCRL %>% inner_join(LatLong)
 #Make a map were highlight the place of the Chapter in the world
 #I could not find a way to avoid the for loop
 
-#for (i in 1:nrow(CCRL)) { #Line for all the chapters
-for (i in 2:25) {  #Line for testing
+for (i in 1:nrow(CCRL)) { #Line for all the chapters
+#for (i in 2:25) {  #Line for testing
   template <- image_read("D:/Rladies/IWD019/IWD2019/RLTemplate.png")
-  place=230  
+  place=190  
   
-  template <- image_annotate(template, paste("Chapter R-Ladies",CCRL$City[i],'in',CCRL$Country[i]), font = 'helvetica', size = 40, location = "+50+50") %>%
-    image_annotate( "Organized by:", font = 'helvetica', size = 25, location = "+50+120", color = "black") %>%
-    image_annotate("Ways to contact:", font = 'helvetica', size = 25, location = "+50+230", color = "black")
+  template <- image_annotate(template, paste("Chapter R-Ladies",CCRL$City[i],'in',CCRL$Country[i]), font = 'helvetica', size = 32, location = "+50+20") %>%
+    image_annotate( "Organized by:", font = 'helvetica', size = 22, location = "+50+65", color = "black") %>%
+    image_annotate("Ways to contact:", font = 'helvetica', size = 22, location = "+50+190", color = "black")
 
-  org <-str_wrap(CCRL$Organizers[i], width = 65)
+  org <-str_wrap(CCRL$Organizers[i], width = 70)
   
-  template <- image_annotate(template, str_sub(org, start = 1, end = ifelse(is.na(str_locate_all(pattern ='\n', org)[[1]][1]-2), str_length(org),str_locate_all(pattern ='\n', org)[[1]][1]-2)), font = 'helvetica', size = 30, location = "+50+150", color = "black")
+  template <- image_annotate(template, org, font = 'helvetica', size = 25, location = "+50+90", color = "black")
   
-  if (!is.na(str_sub(org, start = str_locate_all(pattern ='\n', org)[[1]][1]+1, end = str_length(org)))) {
-    template <- image_annotate(template,str_sub(org, start = str_locate_all(pattern ='\n', org)[[1]][1]+1, end = str_length(org)), font = 'helvetica', size = 30, location = "+50+180", color = "black")
+  if (!is.na(CCRL$Twitter[i])){ 
+    place=place+40
+    pic <- image_read("D:/Rladies/IWD019/IWD2019/twitter.png")
+    template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
+    template <- image_annotate(template, CCRL$Twitter[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
   }
 
+  if (!is.na(CCRL$Meetup[i])){ 
+    place=place+40
+    pic <- image_read("D:/Rladies/IWD019/IWD2019/meetup.png")
+    template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
+    template <- image_annotate(template, CCRL$Meetup[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
+  }
+  
+    
   if (!is.na(CCRL$Email[i])){ 
     place=place+40
     pic <- image_read("D:/Rladies/IWD019/IWD2019/mail.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
-    template <- image_annotate(template, CCRL$Email[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Email[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
   }
 
   
@@ -111,7 +122,7 @@ for (i in 2:25) {  #Line for testing
     pic <- image_read("D:/Rladies/IWD019/IWD2019/facebook.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
 
-    template <- image_annotate(template, CCRL$Facebook[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Facebook[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
   
   }
   
@@ -120,13 +131,17 @@ for (i in 2:25) {  #Line for testing
     pic <- image_read("D:/Rladies/IWD019/IWD2019/instagram.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
     
-    template <- image_annotate(template, CCRL$Instagram[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Instagram[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
   
   if (!is.na(CCRL$Periscope[i])){
     place=place+40
-    template <- image_annotate(template, CCRL$Periscope[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    
+    pic <- image_read("D:/Rladies/IWD019/IWD2019/periscope.png")
+    template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
+    
+    template <- image_annotate(template, CCRL$Periscope[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
   
@@ -135,7 +150,7 @@ for (i in 2:25) {  #Line for testing
     pic <- image_read("D:/Rladies/IWD019/IWD2019/youtube.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
     
-    template <- image_annotate(template, CCRL$Youtube[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Youtube[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
   
@@ -145,7 +160,7 @@ for (i in 2:25) {  #Line for testing
     pic <- image_read("D:/Rladies/IWD019/IWD2019/github.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
     
-    template <- image_annotate(template, CCRL$GitHub[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$GitHub[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
   
@@ -155,7 +170,7 @@ for (i in 2:25) {  #Line for testing
     pic <- image_read("D:/Rladies/IWD019/IWD2019/web.png")
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
     
-    template <- image_annotate(template, CCRL$Website[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Website[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
   
@@ -166,7 +181,7 @@ for (i in 2:25) {  #Line for testing
     template <- image_composite(template, image_scale(pic, "x30"), offset = paste("+50+", as.character(place)))
     
     
-    template <- image_annotate(template, CCRL$Slack[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "pink")
+    template <- image_annotate(template, CCRL$Slack[i] , font = 'helvetica', size = 20, location = paste ("+95+", as.character(place)), color = "purple")
     
   }
 
@@ -188,9 +203,9 @@ for (i in 2:25) {  #Line for testing
 
    place = 400
      
-   template <- image_composite(template, image_scale(map, 'x150'), offset = paste("+650+", as.character(place)))
+   template <- image_composite(template, image_scale(map, 'x150'), offset = paste("+700+", as.character(place)))
    
-   image_write(template, paste("Chapter",CCRL$City[i],".png"), format= "png")
+   image_write(template, paste("Chapter",str_replace_all(CCRL$City[i], fixed(" "), ""),".png"), format= "png")
   
 }
 
