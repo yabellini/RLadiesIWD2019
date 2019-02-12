@@ -1,8 +1,10 @@
------
+# -----
 # Link I used
 # https://ropensci.org/blog/2016/08/23/z-magick-release/
 # https://ropensci.org/tutorials/magick_tutorial/
 # https://d4tagirl.com/2017/05/how-to-fetch-twitter-users-with-r  
+# https://www.gastonsanchez.com/r4strings/stringr-basics.html
+
 
   
 library(readxl)
