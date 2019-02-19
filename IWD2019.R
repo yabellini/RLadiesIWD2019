@@ -290,7 +290,7 @@ templates <- c("Did you know that there is an adjective chapter in X? They’d l
 Chapter_adjectives <- c("awesome", "fantastic", "wonderful", "amazing", "brilliant", "phenomenal", "remarkable", "talented", "incredible", "top-notch", "magnificent", "marvelous", "insightful", "capable", "admirable", "outstanding", "splendid", "exceptional")
 
 
-# get as many sentences as there are chapters
+# get as many sentences as there are Chapters
 combinations <- expand.grid(templates, Chapter_adjectives)
 combinations <- dplyr::mutate_all(combinations, as.character)
 
@@ -320,3 +320,136 @@ Encoding(tweets$City) <- "UTF-8"
 Encoding(tweets$tweet) <- "UTF-8"
 readr::write_csv(tweets, path = "ready_tweets.csv")
 
+
+#Chapters without data
+
+#Pictures
+pics <- c('meme', 'walk', 'group3','group4','future')
+
+set.seed(42)
+# the first one is chosen, this way it's not "another" or "one more"
+
+pics <- c(pics[1],
+               sample(pics, nrow(SinData) - 1, replace = TRUE))
+
+
+for (i in 1:nrow(SinData)) { #Line for all the chapters
+
+#for (i in 1:5) {  #Line for testing
+  template <- image_read("D:/Rladies/IWD019/IWD2019/RLTemplate.png")
+  qr <- image_read("D:/Rladies/IWD019/IWD2019/qrcode_rladiesorg.png")
+  
+  #Add the pic
+  place = 170
+  file <- paste("D:/Rladies/IWD019/IWD2019/",str_trim(as.character(pics[i])),".png")
+  pic <- image_read(str_replace_all(file," ",""))
+  
+  template <- image_composite(template, image_scale(pic, 'x250'), offset = paste("+75+", as.character(place)))  
+  
+  #Add the chapter map
+  
+  world <- ggplot() +
+    borders("world", colour = "gray85", fill = "gray80") +
+    theme_map()
+  
+  
+  if(!is.na(SinData$Lat[i])){
+    map <- world +
+      geom_point(aes(x = Longitude, y = Latitude, size = 1),
+                 data = SinData, colour = 'black', alpha = .5) +
+      geom_point(aes(x = Longitude[i], y = Latitude[i], size = 10),
+                 data= SinData, colour= 'purple', alpha = .5) +
+      geom_point(aes(x = Lon[i], y = Lat[i], size = 10),
+                 data= SinDataL, colour= 'purple', alpha = .5) +
+      theme(legend.position="none")
+    
+    print('Hice el mapa con dos ciudades')
+    
+  } else {
+    map <- world +
+      geom_point(aes(x = Longitude, y = Latitude, size = 1),
+                 data = SinData, colour = 'black', alpha = .5) +
+      geom_point(aes(x = Longitude[i], y = Latitude[i], size = 10),
+                 data= SinData, colour= 'purple', alpha = .5) +
+      theme(legend.position="none")
+    
+    print('hice el mapa con una ciudad')
+  }
+  
+  ggsave("map.png", width = 7, height = 4)
+  
+  map <- image_read("D:/Rladies/IWD019/IWD2019/map.png")
+  
+  template <- image_composite(template, image_scale(map, 'x250'), offset = paste("+550+", as.character(place)))  
+  
+  print('Grabe el mapa')
+  
+  
+  #Add the rest of the info
+  place=190  
+  
+  template <- image_annotate(template, paste("Chapter R-Ladies",SinData$City[i],'in',SinData$Country[i]), font = 'helvetica', size = 32, location = "+50+20") %>%
+    image_annotate( "Organized by:", font = 'helvetica', size = 22, location = "+50+65", color = "black")
+
+  org <-str_wrap(SinData$Organizers[i], width = 70)
+  
+  template <- image_annotate(template, org, font = 'helvetica', size = 25, location = "+50+90", color = "black")
+  
+  print('Grabe los titulos')
+
+  
+  
+  #Colocar el QR
+  place=440
+  
+  template <- image_annotate(template, "+Info:", font = 'helvetica', size = 22, location = paste("+50+", as.character(place)), color = "black")
+  
+  place=place + 10
+  
+  template <- image_composite(template, image_scale(qr, "x70"), offset = paste("+125+", as.character(place)))
+  
+  
+  print('Estoy por grabar la ficha')
+  #Save the final picture
+  image_write(template, paste("Chapter",str_replace_all(SinData$City[i], fixed(" "), ""),".png"), format= "png")
+  
+  print('Grabe la ficha')
+}
+
+
+templates <- c(
+"We have plans for a chapter in X, are you close? Come closer!",
+
+"In and around X? Interested in #rstats? We have just the thing for you!",
+
+"Want to share with like minded R-ladies in X? Stay tuned for this new chapter!",
+
+"R-ladies in X are gearing up for a new chapter...hop over to help them out!",
+
+"Good news for X! An R-ladies chapter is starting right in your city!",
+
+"#RLadies continues expanding and is reaching X!!, Stay tuned for this new chapter!")
+
+# get as many sentences as there are Chapters
+#Pictures
+
+set.seed(42)
+# the first one is chosen, this way it's not "another" or "one more"
+
+templates <- c(templates[1],
+          sample(templates, nrow(SinData) - 1, replace = TRUE))
+
+# add actual tweet text
+CCRLTw <- dplyr::mutate(SinData,
+                        tweet = stringr::str_replace(templates,"X",SinData$City),
+                        
+                        tweet = paste(tweet, "#rladies #iwd2018"),
+                        
+                        picture=paste("Chapter",str_replace_all(SinData$City, fixed(" "), ""),".png"))
+
+# save tweets
+tweets <- dplyr::select(CCRLTw, City, tweet, picture) %>%
+  arrange(City)
+Encoding(tweets$City) <- "UTF-8"
+Encoding(tweets$tweet) <- "UTF-8"
+readr::write_csv(tweets, path = "ready_tweets_nodata.csv")
