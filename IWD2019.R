@@ -260,7 +260,7 @@ for (i in 1:nrow(CCRL)) { #Line for all the chapters
 
 
 #Armado de las frases para los capitulos con datos
-#
+#Base code from Maëlle and the post in R-Ladies blog
 
 # templates
 
@@ -290,7 +290,7 @@ templates <- c("Did you know that there is an adjective chapter in X? They’d l
 Chapter_adjectives <- c("awesome", "fantastic", "wonderful", "amazing", "brilliant", "phenomenal", "remarkable", "talented", "incredible", "top-notch", "magnificent", "marvelous", "insightful", "capable", "admirable", "outstanding", "splendid", "exceptional")
 
 
-# get as many sentences as there are ladies
+# get as many sentences as there are chapters
 combinations <- expand.grid(templates, Chapter_adjectives)
 combinations <- dplyr::mutate_all(combinations, as.character)
 
